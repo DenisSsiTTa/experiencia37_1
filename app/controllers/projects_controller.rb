@@ -1,10 +1,15 @@
 class ProjectsController < ApplicationController
   before_action :set_project, only: [:show, :edit, :update, :destroy]
+  #2 before_action :check_role
 
   # GET /projects
   # GET /projects.json
   def index
-    @projects = Project.all
+    #1 if current_user.role == "admin"
+      @projects = Project.all
+    #1 else
+      #1 redirect_to
+    #1 end
   end
 
   # GET /projects/1
@@ -71,4 +76,13 @@ class ProjectsController < ApplicationController
     def project_params
       params.require(:project).permit(:name, :description)
     end
+
+    #2def check_role
+    #2  if current_user.nil?
+    #2    authenticate_user!
+    #2  else
+    #2    if current_user.role == "user"
+    #2      redirect_to
+    #2  end
+    #2end
 end

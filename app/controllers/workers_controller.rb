@@ -20,6 +20,8 @@ class WorkersController < ApplicationController
 
   # GET /workers/1/edit
   def edit
+    @projects = @worker.projects
+
   end
 
   # POST /workers
@@ -29,6 +31,11 @@ class WorkersController < ApplicationController
 
     respond_to do |format|
       if @worker.save
+
+        if worker_params[:project_ids].present?
+          @worker.projects << Project.find(worker_params[:project_ids])
+        end
+
         format.html { redirect_to @worker, notice: 'Worker was successfully created.' }
         format.json { render :show, status: :created, location: @worker }
       else
@@ -42,7 +49,14 @@ class WorkersController < ApplicationController
   # PATCH/PUT /workers/1.json
   def update
     respond_to do |format|
+
       if @worker.update(worker_params)
+
+        @worker.projects.clear # borra registros de la tabla intermedia
+        if worker_params[:project_ids].present?
+          @worker.projects << Project.find(worker_params[:project_ids])
+        end
+
         format.html { redirect_to @worker, notice: 'Worker was successfully updated.' }
         format.json { render :show, status: :ok, location: @worker }
       else
@@ -70,6 +84,6 @@ class WorkersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def worker_params
-      params.require(:worker).permit(:first_name, :last_name, :email)
+      params.require(:worker).permit(:first_name, :last_name, :email, project_ids: [])
     end
 end
